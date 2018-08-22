@@ -56,188 +56,188 @@
 
 namespace MultiColSLAM
 {
-	class cMultiFramePublisher;
-	class cMap;
-	class cLocalMapping;
-	class cLoopClosing;
-	class cSystem;
-	class cViewer;
+  class cMultiFramePublisher;
+  class cMap;
+  class cLocalMapping;
+  class cLoopClosing;
+  class cSystem;
+  class cViewer;
 
-	class cTracking
-	{
+  class cTracking
+  {
 
-	public:
-		cTracking(cSystem* pSys,
-			ORBVocabulary* pVoc,
-			cMultiFramePublisher *pFramePublisher,
-			cMapPublisher *pMapPublisher,
-			cMap *pMap,
-			cMultiKeyFrameDatabase* pKFDB,
-			cMultiCamSys_ camSystem,
-			std::string settingsPath_);
+  public:
+    cTracking(cSystem* pSys,
+              ORBVocabulary* pVoc,
+              cMultiFramePublisher *pFramePublisher,
+              cMapPublisher *pMapPublisher,
+              cMap *pMap,
+              cMultiKeyFrameDatabase* pKFDB,
+              cMultiCamSys_ camSystem,
+              std::string settingsPath_);
 
-		enum eTrackingState
-		{
-			SYSTEM_NOT_READY = -1,
-			NO_IMAGES_YET = 0,
-			NOT_INITIALIZED = 1,
-			INITIALIZING = 2,
-			WORKING = 3,
-			LOST = 4
-		};
+    enum eTrackingState
+    {
+      SYSTEM_NOT_READY = -1,
+      NO_IMAGES_YET = 0,
+      NOT_INITIALIZED = 1,
+      INITIALIZING = 2,
+      WORKING = 3,
+      LOST = 4
+    };
 
-		void SetLocalMapper(cLocalMapping* pLocalMapper);
-		void SetLoopClosing(cLoopClosing* pLoopClosing);
-		void SetKeyFrameDatabase(cMultiKeyFrameDatabase* pKFDB);
-		void SetViewer(cViewer* pViewer);
+    void SetLocalMapper(cLocalMapping* pLocalMapper);
+    void SetLoopClosing(cLoopClosing* pLoopClosing);
+    void SetKeyFrameDatabase(cMultiKeyFrameDatabase* pKFDB);
+    void SetViewer(cViewer* pViewer);
 
-		cv::Matx44d GrabImageSet(const std::vector<cv::Mat>& imgSet,
-			const double& timestamp);
+    cv::Matx44d GrabImageSet(const std::vector<cv::Mat>& imgSet,
+      const double& timestamp);
 
-		void ForceRelocalisation();
+    void ForceRelocalisation();
 
-		eTrackingState mState;
-		eTrackingState mLastProcessedState;
+    eTrackingState mState;
+    eTrackingState mLastProcessedState;
 
-		// Current Frame
-		cMultiFrame mCurrentFrame;
+    // Current Frame
+    cMultiFrame mCurrentFrame;
 
-		// Initialization Variables
-		std::vector<int> mvIniLastMatches;
-		std::vector<int> mvIniMatches;
-		std::vector<cv::Vec2d> mvbPrevMatched;
-		std::vector<cv::Vec3d> mvIniP3D;
-		cMultiFrame mInitialFrame;
+    // Initialization Variables
+    std::vector<int> mvIniLastMatches;
+    std::vector<int> mvIniMatches;
+    std::vector<cv::Vec2d> mvbPrevMatched;
+    std::vector<cv::Vec3d> mvIniP3D;
+    cMultiFrame mInitialFrame;
 
-		void CheckResetByPublishers();
+    void CheckResetByPublishers();
 
-		std::vector<cv::Matx61d> GetAllPoses() { return this->allPoses; }
-		std::vector<bool> GetAllPosesBool() { return this->allPosesBool; }
-		std::vector<int> GetNrTrackedPts() { return nrTrackedPts; }
-		std::vector<double> GetInlierRatio() { return inlierRatio; }
+    std::vector<cv::Matx61d> GetAllPoses() { return this->allPoses; }
+    std::vector<bool> GetAllPosesBool() { return this->allPosesBool; }
+    std::vector<int> GetNrTrackedPts() { return nrTrackedPts; }
+    std::vector<double> GetInlierRatio() { return inlierRatio; }
 
-		std::vector<double> timingFeatureExtraction;
-		std::vector<double> timingTrackLocalMap;
-		std::vector<double> timingInitalPoseEst;
+    std::vector<double> timingFeatureExtraction;
+    std::vector<double> timingTrackLocalMap;
+    std::vector<double> timingInitalPoseEst;
 
-		bool CheckFinished();
-		void Reset();
+    bool CheckFinished();
+    void Reset();
 
-		int GetNrCams();
-	protected:
+    int GetNrCams();
+  protected:
 
-		std::vector<std::vector<std::string>> imagePaths;
-		int nrImages2Track;
-		std::string imgPath;
-		int imgCounter;
-		bool finished;
-		bool grab;
-		int numberCameras;
+    std::vector<std::vector<std::string>> imagePaths;
+    int nrImages2Track;
+    std::string imgPath;
+    int imgCounter;
+    bool finished;
+    bool grab;
+    int numberCameras;
 
-		cv::Matx44d initPose;
-		double curBaseline2MKF;
-		bool Track();
+    cv::Matx44d initPose;
+    double curBaseline2MKF;
+    bool Track();
 
-		void FirstInitialization();
-		void Initialize();
-		void CreateInitialMap(cv::Matx33d &Rcw,
-			cv::Vec3d &tcw, int leadingCam);
+    void FirstInitialization();
+    void Initialize();
+    void CreateInitialMap(cv::Matx33d &Rcw,
+      cv::Vec3d &tcw, int leadingCam);
 
-		bool TrackPreviousFrame();
-		bool TrackWithMotionModel();
+    bool TrackPreviousFrame();
+    bool TrackWithMotionModel();
 
-		bool RelocalisationRequested();
-		bool Relocalisation();
+    bool RelocalisationRequested();
+    bool Relocalisation();
 
-		void UpdateReference();
-		void UpdateReferencePoints();
-		void UpdateReferenceKeyFrames();
+    void UpdateReference();
+    void UpdateReferencePoints();
+    void UpdateReferenceKeyFrames();
 
-		bool TrackLocalMap();
-		int SearchReferencePointsInFrustum();
+    bool TrackLocalMap();
+    int SearchReferencePointsInFrustum();
 
-		bool NeedNewKeyFrame();
-		void CreateNewKeyFrame();
-		void CountNumberTrackedPointsPerCam();
-		std::vector<int> nbTrackedPtsInCam;
-		std::vector<double> nbTrackedRatios;
+    bool NeedNewKeyFrame();
+    void CreateNewKeyFrame();
+    void CountNumberTrackedPointsPerCam();
+    std::vector<int> nbTrackedPtsInCam;
+    std::vector<double> nbTrackedRatios;
 
-		//Other Thread Pointers
-		cLocalMapping* mpLocalMapper;
-		cLoopClosing* mpLoopClosing;
-		cSystem* mpSystem;
+    //Other Thread Pointers
+    cLocalMapping* mpLocalMapper;
+    cLoopClosing* mpLoopClosing;
+    cSystem* mpSystem;
 
-		// mdBRIEF with octree
-		std::vector<mdBRIEFextractorOct*> mp_mdBRIEF_extractorOct;
-		std::vector<mdBRIEFextractorOct*> mp_mdBRIEF_init_extractorOct;
+    // mdBRIEF with octree
+    std::vector<mdBRIEFextractorOct*> mp_mdBRIEF_extractorOct;
+    std::vector<mdBRIEFextractorOct*> mp_mdBRIEF_init_extractorOct;
 
-		//BoW
-		ORBVocabulary* mpORBVocabulary;
-		cMultiKeyFrameDatabase* mpKeyFrameDB;
+    //BoW
+    ORBVocabulary* mpORBVocabulary;
+    cMultiKeyFrameDatabase* mpKeyFrameDB;
 
-		// Initalization
-		cMultiInitializer* mpInitializer;
+    // Initalization
+    cMultiInitializer* mpInitializer;
 
-		//Local Map
-		cMultiKeyFrame* mpReferenceKF;
-		std::vector<cMultiKeyFrame*> mvpLocalKeyFrames;
-		std::vector<int> mvpLocalKeyFramesCovWeights;
-		std::vector<double> mvpLocalKeyFramesDistance2Frame;
-		std::vector<cMapPoint*> mvpLocalMapPoints;
+    //Local Map
+    cMultiKeyFrame* mpReferenceKF;
+    std::vector<cMultiKeyFrame*> mvpLocalKeyFrames;
+    std::vector<int> mvpLocalKeyFramesCovWeights;
+    std::vector<double> mvpLocalKeyFramesDistance2Frame;
+    std::vector<cMapPoint*> mvpLocalMapPoints;
 
-		//Publishers
-		cMultiFramePublisher* mpFramePublisher;
-		cMapPublisher* mpMapPublisher;
-		cViewer* mpViewer;
+    //Publishers
+    cMultiFramePublisher* mpFramePublisher;
+    cMapPublisher* mpMapPublisher;
+    cViewer* mpViewer;
 
-		//Map
-		cMap* mpMap;
+    //Map
+    cMap* mpMap;
 
-		// camera system class
-		cMultiCamSys_ camSystem;
+    // camera system class
+    cMultiCamSys_ camSystem;
 
-		//New KeyFrame rules (according to fps)
-		int mMinFrames;
-		int mMaxFrames;
+    //New KeyFrame rules (according to fps)
+    int mMinFrames;
+    int mMaxFrames;
 
-		//Current matches in frame
-		int mnMatchesInliers;
+    //Current matches in frame
+    int mnMatchesInliers;
 
-		//Last Frame, KeyFrame and Relocalisation Info
-		cMultiKeyFrame* mpLastKeyFrame;
-		cMultiFrame mLastFrame;
-		unsigned int mnLastKeyFrameId;
-		unsigned int mnLastRelocFrameId;
+    //Last Frame, KeyFrame and Relocalisation Info
+    cMultiKeyFrame* mpLastKeyFrame;
+    cMultiFrame mLastFrame;
+    unsigned int mnLastKeyFrameId;
+    unsigned int mnLastRelocFrameId;
 
-		//Mutex
-		std::mutex mMutexTrack;
-		std::mutex mMutexForceRelocalisation;
+    //Mutex
+    std::mutex mMutexTrack;
+    std::mutex mMutexForceRelocalisation;
 
-		//Reset
-		bool mbPublisherStopped;
-		bool mbReseting;
-		std::mutex mMutexReset;
+    //Reset
+    bool mbPublisherStopped;
+    bool mbReseting;
+    std::mutex mMutexReset;
 
-		//Is relocalisation requested by an external thread? (loop closing)
-		bool mbForceRelocalisation;
+    //Is relocalisation requested by an external thread? (loop closing)
+    bool mbForceRelocalisation;
 
-		//Motion Model
-		bool mbMotionModel;
-		cv::Matx44d mVelocity;
+    //Motion Model
+    bool mbMotionModel;
+    cv::Matx44d mVelocity;
 
-		//Color order (true RGB, false BGR, ignored if grayscale)
-		bool mbRGB;
+    //Color order (true RGB, false BGR, ignored if grayscale)
+    bool mbRGB;
 
-		string settingsPath;
+    string settingsPath;
 
-		// evaluation
-		std::vector<cv::Matx61d> allPoses;
-		std::vector<bool> allPosesBool;
-		std::vector<int> nrTrackedPts;
-		std::vector<double> inlierRatio;
-		// features
-		bool use_mdBRIEF;
-		bool loopAndMapperSet;
-	};
+    // evaluation
+    std::vector<cv::Matx61d> allPoses;
+    std::vector<bool> allPosesBool;
+    std::vector<int> nrTrackedPts;
+    std::vector<double> inlierRatio;
+    // features
+    bool use_mdBRIEF;
+    bool loopAndMapperSet;
+  };
 }
 #endif // TRACKING_H

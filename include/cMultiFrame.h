@@ -47,136 +47,136 @@ namespace MultiColSLAM
 #define FRAME_GRID_ROWS 48
 #define FRAME_GRID_COLS 64
 
-	class cTracking;
-	class cMapPoint;
-	class cMultiKeyFrame;
-	class cMultiKeyFrameDatabase;
-	class cCamModelGeneral_;
+  class cTracking;
+  class cMapPoint;
+  class cMultiKeyFrame;
+  class cMultiKeyFrameDatabase;
+  class cCamModelGeneral_;
 
-	class cMultiFrame
-	{
-	public:
-		cMultiFrame();
-		cMultiFrame(const cMultiFrame &frame); // copy constructor
+  class cMultiFrame
+  {
+  public:
+    cMultiFrame();
+    cMultiFrame(const cMultiFrame &frame); // copy constructor
 
-		cMultiFrame(const std::vector<cv::Mat>& images_,
-			const double &timeStamp,
-			std::vector<mdBRIEFextractorOct*> extractor,
-			ORBVocabulary* voc,
-			cMultiCamSys_& camSystem_,
-			int imgCnt);
+    cMultiFrame(const std::vector<cv::Mat>& images_,
+      const double &timeStamp,
+      std::vector<mdBRIEFextractorOct*> extractor,
+      ORBVocabulary* voc,
+      cMultiCamSys_& camSystem_,
+      int imgCnt);
 
-		ORBVocabulary* mpORBvocabulary;
+    ORBVocabulary* mpORBvocabulary;
 
-		std::vector<mdBRIEFextractorOct*> mp_mdBRIEF_extractorOct;
+    std::vector<mdBRIEFextractorOct*> mp_mdBRIEF_extractorOct;
 
-		// images
-		std::vector<cv::Mat> images;
+    // images
+    std::vector<cv::Mat> images;
 
-		// Frame timestamp
-		double mTimeStamp;
+    // Frame timestamp
+    double mTimeStamp;
 
-		// contains all cameras
-		cMultiCamSys_ camSystem;
+    // contains all cameras
+    cMultiCamSys_ camSystem;
 
-		// Number of KeyPoints
-		std::vector<int> N;
-		// total number of Keypoints
-		size_t totalN;
+    // Number of KeyPoints
+    std::vector<int> N;
+    // total number of Keypoints
+    size_t totalN;
 
-		// Vector of keypoints 2d
-		// and corresponding bearing vectors 3d
-		// for each camera
-		std::vector<cv::KeyPoint> mvKeys;
-		std::vector<cv::Vec3d>    mvKeysRays; // 3D observation rays
+    // Vector of keypoints 2d
+    // and corresponding bearing vectors 3d
+    // for each camera
+    std::vector<cv::KeyPoint> mvKeys;
+    std::vector<cv::Vec3d>    mvKeysRays; // 3D observation rays
 
-		// Bag of Words Vector structures
-		DBoW2::BowVector mBowVec;
-		std::vector<DBoW2::BowVector> mBowVecs;
-		DBoW2::FeatureVector mFeatVec;
-		std::vector<DBoW2::FeatureVector> mFeatVecs;
-		// ORB descriptor, each row associated to a keypoint
-		// descriptors for each camera
-		std::vector<cv::Mat> mDescriptors;
-		// learned descriptor masks
-		std::vector<cv::Mat> mDescriptorMasks;
+    // Bag of Words Vector structures
+    DBoW2::BowVector mBowVec;
+    std::vector<DBoW2::BowVector> mBowVecs;
+    DBoW2::FeatureVector mFeatVec;
+    std::vector<DBoW2::FeatureVector> mFeatVecs;
+    // ORB descriptor, each row associated to a keypoint
+    // descriptors for each camera
+    std::vector<cv::Mat> mDescriptors;
+    // learned descriptor masks
+    std::vector<cv::Mat> mDescriptorMasks;
 
-		// MapPoints associated to keypoints, NULL pointer if not association
-		std::vector<cMapPoint*> mvpMapPoints;
+    // MapPoints associated to keypoints, NULL pointer if not association
+    std::vector<cMapPoint*> mvpMapPoints;
 
-		// Flag to identify outlier associations
-		std::vector<bool> mvbOutlier;
+    // Flag to identify outlier associations
+    std::vector<bool> mvbOutlier;
 
-		// Keypoints are assigned to cells in a grid 
-		// to reduce matching complexity when projecting MapPoints
-		std::vector<double> mfGridElementWidthInv;
-		std::vector<double> mfGridElementHeightInv;
-		// a grid for each camera, thus 3 vectors
-		std::vector<std::vector<std::vector<std::vector<std::size_t> > > > mGrids;
+    // Keypoints are assigned to cells in a grid 
+    // to reduce matching complexity when projecting MapPoints
+    std::vector<double> mfGridElementWidthInv;
+    std::vector<double> mfGridElementHeightInv;
+    // a grid for each camera, thus 3 vectors
+    std::vector<std::vector<std::vector<std::vector<std::size_t> > > > mGrids;
 
-		// Current and Next multi frame id
-		static long unsigned int nNextId;
-		long unsigned int mnId;
+    // Current and Next multi frame id
+    static long unsigned int nNextId;
+    long unsigned int mnId;
 
-		cMultiKeyFrame* mpReferenceKF;
+    cMultiKeyFrame* mpReferenceKF;
 
-		void ComputeBoW();
+    void ComputeBoW();
 
-		void UpdatePoseMatrices();
+    void UpdatePoseMatrices();
 
-		// Check if a MapPoint is in the frustum of the camera 
-		// and also fills variables of the MapPoint to be used by the tracking
-		bool isInFrustum(int cam, cMapPoint* pMP, double viewingCosLimit);
+    // Check if a MapPoint is in the frustum of the camera 
+    // and also fills variables of the MapPoint to be used by the tracking
+    bool isInFrustum(int cam, cMapPoint* pMP, double viewingCosLimit);
 
-		// Compute the cell of a keypoint (return false if outside the grid)
-		bool PosInGrid(const int& cam, cv::KeyPoint &kp, int &posX, int &posY);
+    // Compute the cell of a keypoint (return false if outside the grid)
+    bool PosInGrid(const int& cam, cv::KeyPoint &kp, int &posX, int &posY);
 
-		std::vector<size_t> GetFeaturesInArea(const int& cam,
-			const double &x, const double  &y,
-			const double  &r,
-			const int minLevel = -1, const int maxLevel = -1) const;
+    std::vector<size_t> GetFeaturesInArea(const int& cam,
+      const double &x, const double  &y,
+      const double  &r,
+      const int minLevel = -1, const int maxLevel = -1) const;
 
-		// Scale Pyramid Info
-		int mnScaleLevels;
-		double mfScaleFactor;
-		std::vector<double> mvScaleFactors;
-		std::vector<double> mvLevelSigma2;
-		std::vector<double> mvInvLevelSigma2;
+    // Scale Pyramid Info
+    int mnScaleLevels;
+    double mfScaleFactor;
+    std::vector<double> mvScaleFactors;
+    std::vector<double> mvLevelSigma2;
+    std::vector<double> mvInvLevelSigma2;
 
-		// Undistorted Image Bounds (computed once)
-		static std::vector<int> mnMinX;
-		static std::vector<int> mnMaxX;
-		static std::vector<int> mnMinY;
-		static std::vector<int> mnMaxY;
+    // Undistorted Image Bounds (computed once)
+    static std::vector<int> mnMinX;
+    static std::vector<int> mnMaxX;
+    static std::vector<int> mnMinY;
+    static std::vector<int> mnMaxY;
 
-		static bool mbInitialComputations;
+    static bool mbInitialComputations;
 
-		// this variable holds the mapping between keypoint ID and camera
-		// it was observed in
-		// [key_id : cam_id]
-		std::unordered_map<size_t, int> keypoint_to_cam;
-		// this variable holds the mapping between the continous indexing of all
-		// descriptors and keypoints and the image wise indexes
-		// it was observed in
-		// [cont_id : local_image_id]
-		std::unordered_map<size_t, int> cont_idx_to_local_cam_idx;
+    // this variable holds the mapping between keypoint ID and camera
+    // it was observed in
+    // [key_id : cam_id]
+    std::unordered_map<size_t, int> keypoint_to_cam;
+    // this variable holds the mapping between the continous indexing of all
+    // descriptors and keypoints and the image wise indexes
+    // it was observed in
+    // [cont_id : local_image_id]
+    std::unordered_map<size_t, int> cont_idx_to_local_cam_idx;
 
-		cv::Matx<double, 4, 4> GetPose() { return camSystem.Get_M_t(); }
-		cv::Matx<double, 6, 1> GetPoseMin() { return camSystem.Get_M_t_min(); }
+    cv::Matx<double, 4, 4> GetPose() { return camSystem.Get_M_t(); }
+    cv::Matx<double, 6, 1> GetPoseMin() { return camSystem.Get_M_t_min(); }
 
-		void SetPose(cv::Matx44d& T) { camSystem.Set_M_t(T); }
-		void SetPoseMin(cv::Matx61d& Tmin) { camSystem.Set_M_t_from_min(Tmin); }
+    void SetPose(cv::Matx44d& T) { camSystem.Set_M_t(T); }
+    void SetPoseMin(cv::Matx61d& Tmin) { camSystem.Set_M_t_from_min(Tmin); }
 
-		bool HavingMasks() { return masksLearned; }
-		int DescDims() { return descDimension; }
-		int Doing_mdBRIEF() { return mdBRIEF; }
-		int GetImgCnt() { return imgCnt; }
+    bool HavingMasks() { return masksLearned; }
+    int DescDims() { return descDimension; }
+    int Doing_mdBRIEF() { return mdBRIEF; }
+    int GetImgCnt() { return imgCnt; }
 
-	private:
-		bool mdBRIEF;
-		bool masksLearned;
-		int descDimension;
-		int imgCnt;
-	};
+  private:
+    bool mdBRIEF;
+    bool masksLearned;
+    int descDimension;
+    int imgCnt;
+  };
 }
 #endif // MULTIFRAME_H

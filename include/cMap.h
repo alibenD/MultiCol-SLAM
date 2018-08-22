@@ -36,57 +36,57 @@
 namespace MultiColSLAM
 {
 
-	class cMapPoint;
-	class cMultiKeyFrame;
+  class cMapPoint;
+  class cMultiKeyFrame;
 
-	class cMap
-	{
-	public:
-		cMap();
+  class cMap
+  {
+  public:
+    cMap();
 
-		void AddKeyFrame(cMultiKeyFrame* pKF);
-		void AddMapPoint(cMapPoint* pMP);
-		void EraseMapPoint(cMapPoint* pMP);
-		void EraseKeyFrame(cMultiKeyFrame* pKF);
-		void SetCurrentCameraPose(cv::Mat Tcw);
-		void SetReferenceKeyFrames(const std::vector<cMultiKeyFrame*> &vpKFs);
-		void SetReferenceMapPoints(const std::vector<cMapPoint*> &vpMPs);
+    void AddKeyFrame(cMultiKeyFrame* pKF);
+    void AddMapPoint(cMapPoint* pMP);
+    void EraseMapPoint(cMapPoint* pMP);
+    void EraseKeyFrame(cMultiKeyFrame* pKF);
+    void SetCurrentCameraPose(cv::Mat Tcw);
+    void SetReferenceKeyFrames(const std::vector<cMultiKeyFrame*> &vpKFs);
+    void SetReferenceMapPoints(const std::vector<cMapPoint*> &vpMPs);
 
-		std::vector<cMultiKeyFrame*> GetAllKeyFrames();
-		std::vector<cMapPoint*> GetAllMapPoints();
+    std::vector<cMultiKeyFrame*> GetAllKeyFrames();
+    std::vector<cMapPoint*> GetAllMapPoints();
 
-		std::vector<cMultiKeyFrame*> GetReferenceKeyFrames();
-		std::vector<cMapPoint*> GetReferenceMapPoints();
+    std::vector<cMultiKeyFrame*> GetReferenceKeyFrames();
+    std::vector<cMapPoint*> GetReferenceMapPoints();
 
-		void GetModelPoints(std::vector<cv::Vec3d>& modelPts,
-			std::vector<cv::Vec3d>& modelCompanionPts);
-		void SetModelPoints(const std::vector<cv::Vec3d>& _modelPts,
-			const std::vector<cv::Vec3d>& _modelCompanionPts);
+    void GetModelPoints(std::vector<cv::Vec3d>& modelPts,
+      std::vector<cv::Vec3d>& modelCompanionPts);
+    void SetModelPoints(const std::vector<cv::Vec3d>& _modelPts,
+      const std::vector<cv::Vec3d>& _modelCompanionPts);
 
-		int MapPointsInMap();
-		int KeyFramesInMap();
+    int MapPointsInMap();
+    int KeyFramesInMap();
 
-		void SetFlagAfterBA();
-		bool isMapUpdated();
-		void ResetUpdated();
+    void SetFlagAfterBA();
+    bool isMapUpdated();
+    void ResetUpdated();
 
-		unsigned int GetMaxKFid();
+    unsigned int GetMaxKFid();
 
-		void clear();
+    void clear();
 
-		//std::mutex mMutexMapUpdate;
+    //std::mutex mMutexMapUpdate;
 
-	protected:
-		std::set<cMapPoint*> mspMapPoints;
-		std::set<cMultiKeyFrame*> mspKeyFrames;
-		std::vector<cMapPoint*> mvpReferenceMapPoints;
+  protected:
+    std::set<cMapPoint*> mspMapPoints;
+    std::set<cMultiKeyFrame*> mspKeyFrames;
+    std::vector<cMapPoint*> mvpReferenceMapPoints;
 
-		unsigned int mnMaxKFid;
+    unsigned int mnMaxKFid;
 
-		std::mutex mMutexMap;
-		bool mbMapUpdated;
+    std::mutex mMutexMap;
+    bool mbMapUpdated;
 
-	};
+  };
 
 }
 #endif // MAP_H

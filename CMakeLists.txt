@@ -15,7 +15,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with MultiCol-SLAM . If not, see <http://www.gnu.org/licenses/>.
-
+cmake_minimum_required(VERSION 3.10)
 project (MultiCol-SLAM)
 
 IF(NOT CMAKE_BUILD_TYPE)
@@ -34,8 +34,8 @@ IF(WIN32)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -openmp -W0 -MP")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -openmp -W0 -MP")
 ELSE()
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp -O3 -march=native -std=c++11")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -O3 -march=native -std=c++11")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}  -O3 -march=native -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -std=c++11")
 ENDIF()
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)

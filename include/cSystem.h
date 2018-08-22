@@ -44,91 +44,91 @@
 
 namespace MultiColSLAM
 {
-	class cMultiFramePublisher;
-	class cMap;
-	class cMapPublisher;
-	class cTracking;
-	class cLocalMapping;
-	class cLoopClosing;
-	class cMultiCamSys_;
-	class cViewer;
+  class cMultiFramePublisher;
+  class cMap;
+  class cMapPublisher;
+  class cTracking;
+  class cLocalMapping;
+  class cLoopClosing;
+  class cMultiCamSys_;
+  class cViewer;
 
-	class cSystem
-	{
-	public:
+  class cSystem
+  {
+  public:
 
-		// Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
-		cSystem(const string &strVocFile, const string &strSettingsFile,
-			const string& path2MCScalibrationFiles, const bool bUseViewer = true);
+    // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
+    cSystem(const string &strVocFile, const string &strSettingsFile,
+      const string& path2MCScalibrationFiles, const bool bUseViewer = true);
 
-		void LoadMCS(const string path2calibrations, cMultiCamSys_& camSystem);
+    void LoadMCS(const string path2calibrations, cMultiCamSys_& camSystem);
 
-		// Proccess the given frames. Images must be synchronized. The camera calibration needs to be known
-		// Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
-		// Returns the camera pose (empty if tracking fails).
-		cv::Matx44d TrackMultiColSLAM(const std::vector<cv::Mat>& imgSet, const double &timestamp);
+    // Proccess the given frames. Images must be synchronized. The camera calibration needs to be known
+    // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
+    // Returns the camera pose (empty if tracking fails).
+    cv::Matx44d TrackMultiColSLAM(const std::vector<cv::Mat>& imgSet, const double &timestamp);
 
-		// This stops local mapping thread (map building) and performs only camera tracking.
-		void ActivateLocalizationMode();
-		// This resumes local mapping thread and performs SLAM again.
-		void DeactivateLocalizationMode();
+    // This stops local mapping thread (map building) and performs only camera tracking.
+    void ActivateLocalizationMode();
+    // This resumes local mapping thread and performs SLAM again.
+    void DeactivateLocalizationMode();
 
-		// Reset the system (clear map)
-		void Reset();
+    // Reset the system (clear map)
+    void Reset();
 
-		// All threads will be requested to finish.
-		// It waits until all threads have finished.
-		// This function must be called before saving the trajectory.
-		void Shutdown();
+    // All threads will be requested to finish.
+    // It waits until all threads have finished.
+    // This function must be called before saving the trajectory.
+    void Shutdown();
 
-		// Save camera trajectory in the.
-		// Call first Shutdown()
-		// See format details at: http://www.ipf.kit.edu/lafida.php
-		void SaveMKFTrajectoryLAFIDA(const string &filename);
+    // Save camera trajectory in the.
+    // Call first Shutdown()
+    // See format details at: http://www.ipf.kit.edu/lafida.php
+    void SaveMKFTrajectoryLAFIDA(const string &filename);
 
-	private:
+  private:
 
-		// ORB vocabulary used for place recognition and feature matching.
-		ORBVocabulary* mpVocabulary;
+    // ORB vocabulary used for place recognition and feature matching.
+    ORBVocabulary* mpVocabulary;
 
-		// KeyFrame database for place recognition (relocalization and loop detection).
-		cMultiKeyFrameDatabase* mpKeyFrameDatabase;
+    // KeyFrame database for place recognition (relocalization and loop detection).
+    cMultiKeyFrameDatabase* mpKeyFrameDatabase;
 
-		// Map structure that stores the pointers to all KeyFrames and MapPoints.
-		cMap* mpMap;
+    // Map structure that stores the pointers to all KeyFrames and MapPoints.
+    cMap* mpMap;
 
-		// Tracker. It receives a frame and computes the associated camera pose.
-		// It also decides when to insert a new keyframe, create some new MapPoints and
-		// performs relocalization if tracking fails.
-		cTracking* mpTracker;
+    // Tracker. It receives a frame and computes the associated camera pose.
+    // It also decides when to insert a new keyframe, create some new MapPoints and
+    // performs relocalization if tracking fails.
+    cTracking* mpTracker;
 
-		// Local Mapper. It manages the local map and performs local bundle adjustment.
-		cLocalMapping* mpLocalMapper;
+    // Local Mapper. It manages the local map and performs local bundle adjustment.
+    cLocalMapping* mpLocalMapper;
 
-		// Loop Closer. It searches loops with every new keyframe. If there is a loop it performs
-		// a pose graph optimization and full bundle adjustment (in a new thread) afterwards.
-		cLoopClosing* mpLoopCloser;
+    // Loop Closer. It searches loops with every new keyframe. If there is a loop it performs
+    // a pose graph optimization and full bundle adjustment (in a new thread) afterwards.
+    cLoopClosing* mpLoopCloser;
 
-		// The viewer draws the map and the current camera pose. It uses Pangolin.
-		cViewer* mpViewer;
-		cMapPublisher* mpMapPublisher;
-		cMultiFramePublisher* mpMultiFramePublisher;
+    // The viewer draws the map and the current camera pose. It uses Pangolin.
+    cViewer* mpViewer;
+    cMapPublisher* mpMapPublisher;
+    cMultiFramePublisher* mpMultiFramePublisher;
 
-		// System threads: Local Mapping, Loop Closing, Viewer.
-		// The Tracking thread "lives" in the main execution thread that creates the System object.
-		std::thread* mptLocalMapping;
-		std::thread* mptLoopClosing;
-		std::thread* mptViewer;
+    // System threads: Local Mapping, Loop Closing, Viewer.
+    // The Tracking thread "lives" in the main execution thread that creates the System object.
+    std::thread* mptLocalMapping;
+    std::thread* mptLoopClosing;
+    std::thread* mptViewer;
 
-		// Reset flag
-		std::mutex mMutexReset;
-		bool mbReset;
+    // Reset flag
+    std::mutex mMutexReset;
+    bool mbReset;
 
-		// Change mode flags
-		std::mutex mMutexMode;
-		bool mbActivateLocalizationMode;
-		bool mbDeactivateLocalizationMode;
-	};
+    // Change mode flags
+    std::mutex mMutexMode;
+    bool mbActivateLocalizationMode;
+    bool mbDeactivateLocalizationMode;
+  };
 
 
 }
